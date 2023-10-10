@@ -1,6 +1,7 @@
 package me.dio.copa.catar.features
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,8 +31,10 @@ import me.dio.copa.catar.domain.model.MatchDomain
 import me.dio.copa.catar.domain.model.TeamDomain
 import me.dio.copa.catar.ui.theme.Shapes
 
+
+typealias  NotificationOnClick = (match:MatchDomain) -> Unit
 @Composable
-fun MainScreen(matches: List<MatchDomain>) {
+fun MainScreen(matches: List<MatchDomain>, notificationOnClick: NotificationOnClick) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,7 +42,7 @@ fun MainScreen(matches: List<MatchDomain>) {
     ) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(matches) { match ->
-                MatchInfo(match)
+                MatchInfo(match, notificationOnClick)
             }
         }
     }
@@ -47,7 +50,7 @@ fun MainScreen(matches: List<MatchDomain>) {
 }
 
 @Composable
-fun MatchInfo(match: MatchDomain) {
+fun MatchInfo(match: MatchDomain, notificationOnClick: NotificationOnClick) {
     Card(
         shape = Shapes.large,
         modifier = Modifier.fillMaxWidth()
@@ -60,7 +63,7 @@ fun MatchInfo(match: MatchDomain) {
                 modifier = Modifier.height(160.dp)
             )
             Column(modifier = Modifier.padding(16.dp)) {
-                Notification(match)
+                Notification(match, notificationOnClick)
                 Title(match)
                 Teams(match )
             }
@@ -119,11 +122,13 @@ fun Title(match: MatchDomain) {
 }
 
 @Composable
-fun Notification(match: MatchDomain) {
+fun Notification(match: MatchDomain, onClick: NotificationOnClick) {
     Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
         val drawable = if (match.notificationEnabled) R.drawable.ic_notifications_active
         else R.drawable.ic_notifications
 
-        Image(painter = painterResource(id = drawable), contentDescription = null)
+        Image(modifier = Modifier.clickable {
+            onClick(match)
+        }, painter = painterResource(id = drawable), contentDescription = null)
     }
 }
